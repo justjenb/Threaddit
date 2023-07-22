@@ -128,7 +128,7 @@ module.exports = {
   async removeFriend(req, res) {
     try {
       const user = await User.findOneAndUpdate(
-        { _id: req.params.userId },
+        { username: req.params.username },
         { $pull: {friends: req.params.friendId } },
         { runValidators: true, new: true }
       );

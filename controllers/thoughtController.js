@@ -1,4 +1,4 @@
-const { Reaction, Thought } = require('../models');
+const { Reaction, Thought, User } = require('../models');
 
 module.exports = {
 
@@ -24,15 +24,39 @@ async getSingleThought(req, res) {
     res.status(500).json(err);
   }
 },
-async createThought(req, res) {
+async createThought (req, res) {
+  console.log('You are adding a thought');
+  console.log(req.body);
+
   try {
     const thought = await Thought.create(req.body);
-    res.json(thought);
+    const user = await User.updateOne(
+      { _id: req.params.userId },
+      { $addToSet: { thoughts: thought._id } },
+      { runValidators: true, new: true }
+    );
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ message: 'No user user with that ID :(' });
+    }
+
+    res.json(user);
   } catch (err) {
-    console.log(err);
-    return res.status(500).json(err);
+    console.error(err);
+    res.status(500).json(err);
   }
 },
+// async createThought(req, res) {
+//   try {
+//     const thought = await Thought.create(req.body);
+//     res.json(thought);
+//   } catch (err) {
+//     console.log(err);
+//     return res.status(500).json(err);
+//   }
+// },
 async deleteThought(req, res) {
   try {
     const thought = await Thought.findOneAndDelete({ _id: req.params.thoughtId });
