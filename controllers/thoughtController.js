@@ -29,18 +29,25 @@ async createThought (req, res) {
   console.log(req.body);
 
   try {
-    const thought = await Thought.create(req.body);
-    const user = await User.updateOne(
-      { _id: req.params.userId },
-      { $addToSet: { thoughts: thought._id } },
-      { runValidators: true, new: true }
-    );
-
+    const user = await User.findById(req.params.userId);
     if (!user) {
       return res
         .status(404)
         .json({ message: 'No user user with that ID :(' });
     }
+
+    const newThought = {
+      ...req.body,
+      username: user.username,
+    }
+
+    const thought = await Thought.create(newThought);
+    
+    await User.updateOne(
+      { _id: req.params.userId },
+      { $addToSet: { thoughts: thought._id } },
+      { runValidators: true, new: true }
+    );
 
     res.json(user);
   } catch (err) {
