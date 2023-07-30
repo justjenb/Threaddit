@@ -25,9 +25,6 @@ module.exports = {
     }
   },
   async createThought(req, res) {
-    console.log("You are adding a thought");
-    console.log(req.body);
-
     try {
       const user = await User.findById(req.params.userId);
       if (!user) {
@@ -129,7 +126,7 @@ module.exports = {
     try {
       const thought = await Thought.findOneAndUpdate(
         { _id: req.params.thoughtId },
-        { $pull: { reactions: { reactionId: req.params.reactionId } } },
+        { $pull: { reactions: { _id: req.params.reactionId } } },
         { runValidators: true, new: true }
       );
 

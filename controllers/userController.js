@@ -47,7 +47,6 @@ module.exports = {
       const user = await User.create(req.body);
       res.json(user);
     } catch (err) {
-      console.log(err);
       return res.status(500).json(err);
     }
   },
@@ -104,9 +103,6 @@ module.exports = {
     }
   },
   async addFriend (req, res) {
-    console.log('You are adding a friend');
-    console.log(req.body);
-
     try {
       const user = await User.updateOne(
         { _id: req.params.userId },
@@ -127,8 +123,8 @@ module.exports = {
   },
   async removeFriend(req, res) {
     try {
-      const user = await User.findOneAndUpdate(
-        { username: req.params.username },
+      const user = await User.updateOne(
+        { _id: req.params.userId },
         { $pull: {friends: req.params.friendId } },
         { runValidators: true, new: true }
       );
